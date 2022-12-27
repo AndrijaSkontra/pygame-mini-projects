@@ -43,12 +43,12 @@ def draw_window(moj_lik, lista_projektila, lista_projektila2, orijentacija):
 
 
 def projektil_movement(lista_projektila, lista_projektila2, orijentacija):
-    if orijentacija_metka == 1:
+    if orijentacija == 1:
         for projektil in lista_projektila:
             projektil.x += BRZINA_PROJEKTILA
             if projektil.x > WIDTH:
                 lista_projektila.remove(projektil)
-    if orijentacija_metka == 0:
+    if orijentacija == 0:
         for projektil2 in lista_projektila2:
             projektil2.x -= BRZINA_PROJEKTILA
             if projektil2.x < 0:
