@@ -1,122 +1,177 @@
 import pygame
 import os
+import math
+import time
+pygame.font.init()
+pygame.mixer.init()
 
-WIDTH, HEIGHT = 1200, 800
+pygame.init()
+class Character(pygame.sprite.Sprite):
+    def __init__(self,pos_x, pos_y, width, height, image_path, flip_image_path, speed, max_jumps,max_projectiles):
+        super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load(image_path),(width, height))
+        self.flip_image = pygame.transform.scale(pygame.image.load(flip_image_path),(width, height))
+        self.rect = pygame.Rect(pos_x, pos_y, width, height)
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+        self.speed = speed
+        self.max_jumps = max_jumps
+        self.max_proj = max_projectiles
+
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self,pos_x, pos_y, width, height, image_path,speed):
+        super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load(image_path),(width, height))
+        self.rect = pygame.Rect(pos_x + 10, pos_y, width - 50, height) # hardcode
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+        self.speed = speed
+
+zombieL = Enemy(0, 413, 100, 200, 'zombie-removebg-preview.png', 1)
+zombieR = Enemy(1200, 413, 100, 200, 'zombiefliped.png', 1)
+
+
+
+ruka = Character(500, 100, 100, 100, 'R-modified.png', 'R.png', 3, 2, 1)
+
+GAMEOVER_SONG = pygame.mixer.Sound(os.path.join('mixkit-sad-game-over-trombone-471.wav'))
+
+FONT = pygame.font.SysFont('comicsans', 50)
+
+
+WIDTH, HEIGHT = 1200, 700
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 
-LIK_SIRINA = 100
-LIK_VISINA = 100
+TLO_SIRINA = 100
+TLO_VISINA = 100
 PROJEKTIL_SIRINA = 100
 PROJEKTIL_VISINA = 50
-BRZINA_LIKA = 3
-BRZINA_SKOKA = 2
-MAX_PROJEKTILA = 2
 BRZINA_PROJEKTILA = 5
-MAX_SKOKOVA = 2
 
-
-LIK_IMAGE = pygame.image.load(os.path.join('R-modified.png'))
-LIK = pygame.transform.scale(LIK_IMAGE, (LIK_SIRINA, LIK_VISINA))
-LIK_DRUGA_STRANA_IMAGE = pygame.image.load(os.path.join('R.png'))
-LIK_DRUGA_STRANA = pygame.transform.scale(LIK_DRUGA_STRANA_IMAGE, (LIK_SIRINA, LIK_VISINA))
 PROJEKTIL_IMAGE = pygame.image.load(os.path.join('34c645_d40947803670443dbcfd33d1ee205d0f.png'))
 PROJEKTIL_IMAGE2 = pygame.image.load(os.path.join('34c645_d40947803670443dbcfd33d1ee205d0f-modified.png'))
 PROJEKTIL = pygame.transform.scale(PROJEKTIL_IMAGE, (PROJEKTIL_SIRINA, PROJEKTIL_VISINA))
 PROJEKTIL2 = pygame.transform.scale(PROJEKTIL_IMAGE2, (PROJEKTIL_SIRINA, PROJEKTIL_VISINA))
 BACKGROUND_IMAGE = pygame.image.load(os.path.join('ecec9f0dbde599a13bb61512654552ba.png'))
 BACKGROUD = pygame.transform.scale(BACKGROUND_IMAGE, (WIDTH, HEIGHT))
+TLO_IMAGE = pygame.image.load(os.path.join('zemlja.png'))
+TLO = pygame.transform.scale(TLO_IMAGE, (TLO_SIRINA, TLO_VISINA))
+GUBITAK = pygame.transform.scale(pygame.image.load('png-clipart-es-game-over-text-thumbnail-removebg-preview.png'),(1000, 500))
 
 pygame.display.set_caption("Game by Andrija")
 
 
-def draw_window(moj_lik, lista_projektila, lista_projektila2, orijentacija):
+def draw_window(ruka, lista_projektila, orijentacija, score_count):
     WIN.blit(BACKGROUD, (0, 0))
+    WIN.blit(TLO, (0, 600))
+    WIN.blit(TLO, (100, 600))
+    WIN.blit(TLO, (200, 600))
+    WIN.blit(TLO, (300, 600))
+    WIN.blit(TLO, (400, 600))
+    WIN.blit(TLO, (500, 600))
+    WIN.blit(TLO, (600, 600))
+    WIN.blit(TLO, (700, 600))
+    WIN.blit(TLO, (800, 600))
+    WIN.blit(TLO, (900, 600))
+    WIN.blit(TLO, (1000, 600))
+    WIN.blit(TLO, (1100, 600))
     if orijentacija == 1:
-        WIN.blit(LIK, (moj_lik.x, moj_lik.y))
+        WIN.blit(ruka.image , (ruka.rect.x, ruka.rect.y))
     if orijentacija == 0:
-        WIN.blit(LIK_DRUGA_STRANA, (moj_lik.x, moj_lik.y))
+        WIN.blit(ruka.flip_image, (ruka.rect.x, ruka.rect.y))
     for projektil in lista_projektila:
         WIN.blit(PROJEKTIL, (projektil.x, projektil.y))
-    for projektil2 in lista_projektila2:
-        WIN.blit(PROJEKTIL2, (projektil2.x, projektil2.y))
+    WIN.blit(zombieL.image,(zombieL.rect.x, zombieL.rect.y))
+    text = FONT.render(f"Score: {score_count}", 1,(255, 255, 255))
+    WIN.blit(text, (800,100))
     pygame.display.update()
 
 
-def projektil_movement(lista_projektila, lista_projektila2, orijentacija):
-    if orijentacija == 1:
-        for projektil in lista_projektila:
-            projektil.x += BRZINA_PROJEKTILA
-            if projektil.x > WIDTH:
-                lista_projektila.remove(projektil)
-    if orijentacija == 0:
-        for projektil2 in lista_projektila2:
-            projektil2.x -= BRZINA_PROJEKTILA
-            if projektil2.x < 0:
-                lista_projektila2.remove(projektil2)
-
-
-def moj_lik_movement(moj_lik):
+def moj_lik_movement(ruka):
     if pygame.key.get_pressed()[pygame.K_d]:
-        moj_lik.x += BRZINA_LIKA
+        ruka.rect.x += ruka.speed
     if pygame.key.get_pressed()[pygame.K_a]:
-        moj_lik.x -= BRZINA_LIKA
-
-
+        ruka.rect.x -= ruka.speed
 
 
 def main():
-    moj_lik = pygame.Rect(550, 380, LIK_SIRINA, LIK_VISINA)
     lik_ubrzanje = 0
     gravitacija = 1
     snaga_skoka = -15
     brojac_skokova = 0
     orijentacija = 1  # desno
-    lista_projektila = []
-    lista_projektila2 = []
     run = True
+    lista_projektila = []
+    postoji_proj = False
+    score_count = 0
     while run:
         clock = pygame.time.Clock()
         clock.tick(90)
+        mouse_x, mouse_y = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and (len(lista_projektila) + len(
-                        lista_projektila2)) < MAX_PROJEKTILA:
-                    if orijentacija == 1:
-                        moj_projektil = pygame.Rect(moj_lik.x, moj_lik.y, PROJEKTIL_SIRINA,
-                                                    PROJEKTIL_VISINA)
-                        lista_projektila.append(moj_projektil)
-                    if orijentacija == 0:
-                        moj_projektil2 = pygame.Rect(moj_lik.x, moj_lik.y, PROJEKTIL_SIRINA,
-                                                    PROJEKTIL_VISINA)
-                        lista_projektila2.append(moj_projektil2)
-
-                if event.key == pygame.K_w and brojac_skokova < MAX_SKOKOVA:  # JUMP
+                if event.key == pygame.K_SPACE and len(lista_projektila) < ruka.max_proj:
+                    pygame.time.delay(30)
+                    moj_projektil = pygame.Rect(ruka.rect.x, ruka.rect.y, PROJEKTIL_SIRINA,
+                                                PROJEKTIL_VISINA)
+                    lista_projektila.append(moj_projektil)
+                    postoji_proj = True
+                if event.key == pygame.K_w and brojac_skokova < ruka.max_jumps:  # JUMP
                     lik_ubrzanje = snaga_skoka
                     brojac_skokova += 1
         lik_ubrzanje += gravitacija
-        moj_lik.y += lik_ubrzanje
-        if moj_lik.y > 380:
+        ruka.rect.y += lik_ubrzanje
+
+
+        if ruka.rect.y > 536:
             lik_ubrzanje = 0
-            moj_lik.y = 380
+            ruka.rect.y = 536
             brojac_skokova = 0
         if pygame.key.get_pressed()[pygame.K_d]:
             orijentacija = 1
         if pygame.key.get_pressed()[pygame.K_a]:
             orijentacija = 0
-        moj_lik_movement(moj_lik)
-        projektil_movement(lista_projektila, lista_projektila2, orijentacija)
-        draw_window(moj_lik, lista_projektila, lista_projektila2, orijentacija)
-        print(orijentacija)
+
+        moj_lik_movement(ruka)
+        if postoji_proj == False:
+            C_rukex = ruka.rect.x
+            C_rukey = ruka.rect.y
+
+        if postoji_proj == False:
+            mouse_x_C = mouse_x
+            mouse_y_C = mouse_y
+
+        x_orientation = (mouse_x_C - C_rukex)
+        y_orientation = (mouse_y_C - C_rukey)
+        hypotenuse = (math.sqrt(x_orientation ** 2 + y_orientation ** 2)) / 10
+        for projektil in lista_projektila:
+            projektil.x += x_orientation / hypotenuse
+            projektil.y += y_orientation / hypotenuse
+            if projektil.x > WIDTH or projektil.x < 0 or projektil.y > HEIGHT or projektil.y < 0:  ##uvjeti
+                lista_projektila.remove(projektil)
+                postoji_proj = False
+            if projektil.colliderect(zombieL.rect):
+                lista_projektila.remove(projektil)
+                postoji_proj = False
+                zombieL.rect.x = 0
+                zombieL.rect.y = 413
+                zombieL.speed *= 1.2
+                score_count += 1
+
+        zombieL.rect.x += zombieL.speed
+
+        draw_window(ruka, lista_projektila, orijentacija, score_count)
+        if ruka.rect.colliderect(zombieL.rect):
+            WIN.blit(GUBITAK, (WIDTH/2 - GUBITAK.get_width()/2, HEIGHT/2 - GUBITAK.get_height()/2))
+            pygame.display.update()
+            GAMEOVER_SONG.play()
+            pygame.time.delay(4000)
+            break
+
+
     pygame.quit()
 
 
 main()
-
-
-
-
-
-
-
