@@ -1,4 +1,5 @@
 import pygame
+pygame.mixer.init()
 
 pygame.init()
 
@@ -10,6 +11,8 @@ CIJEV1 = pygame.transform.scale(pygame.image.load('cijev1-removebg-preview.png')
 CIJEV2 = pygame.transform.scale(pygame.image.load('cijev2-removebg-preview.png'), (150, 133))
 CIJEV3 = pygame.transform.scale(pygame.image.load('cijev3-removebg-preview.png'), (150, 150))
 WINNER_FONT = pygame.font.SysFont('comicsans', 100)
+WIN_SOUND = pygame.mixer.Sound('tadaa-47995.mp3')
+ROTATE_SOUND = pygame.mixer.Sound('mixkit-falling-on-metal-roof-752.wav')
 
 
 class Cijev(pygame.sprite.Sprite):
@@ -58,6 +61,7 @@ while running:
                         s.angle += 90
                         if s.angle == 360:
                             s.angle = 0
+                        ROTATE_SOUND.play()
 
 
     WIN.blit(BACKGROUND, (0, 0))
@@ -69,7 +73,8 @@ while running:
             draw_text = WINNER_FONT.render("POBJEDA !", 1, (255, 0, 0))
             WIN.blit(draw_text, (WIDTH / 2 - draw_text.get_width() / 2, HEIGHT / 2 - draw_text.get_height() / 2))
             pygame.display.update()
-            pygame.time.delay(3000)
+            WIN_SOUND.play()
+            pygame.time.delay(4000)
             break
     pygame.display.flip()
 

@@ -35,6 +35,7 @@ zombieR = Enemy(1200, 413, 100, 200, 'zombiefliped.png', 1)
 ruka = Character(500, 100, 100, 100, 'R-modified.png', 'R.png', 3, 2, 1)
 
 GAMEOVER_SONG = pygame.mixer.Sound(os.path.join('mixkit-sad-game-over-trombone-471.wav'))
+FIRE_SOUND = pygame.mixer.Sound('726ZS62-wizard-fire-spell-cast-2-[AudioTrimmer.com].mp3')
 
 FONT = pygame.font.SysFont('comicsans', 50)
 
@@ -57,6 +58,7 @@ BACKGROUD = pygame.transform.scale(BACKGROUND_IMAGE, (WIDTH, HEIGHT))
 TLO_IMAGE = pygame.image.load(os.path.join('zemlja.png'))
 TLO = pygame.transform.scale(TLO_IMAGE, (TLO_SIRINA, TLO_VISINA))
 GUBITAK = pygame.transform.scale(pygame.image.load('png-clipart-es-game-over-text-thumbnail-removebg-preview.png'),(1000, 500))
+
 
 pygame.display.set_caption("Game by Andrija")
 
@@ -118,6 +120,7 @@ def main():
                                                 PROJEKTIL_VISINA)
                     lista_projektila.append(moj_projektil)
                     postoji_proj = True
+                    FIRE_SOUND.play()
                 if event.key == pygame.K_w and brojac_skokova < ruka.max_jumps:  # JUMP
                     lik_ubrzanje = snaga_skoka
                     brojac_skokova += 1
