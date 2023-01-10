@@ -35,7 +35,7 @@ zombieR = Enemy(1200, 413, 100, 200, 'zombiefliped.png', 1)
 ruka = Character(500, 100, 100, 100, 'R-modified.png', 'R.png', 3, 2, 1)
 
 GAMEOVER_SONG = pygame.mixer.Sound(os.path.join('mixkit-sad-game-over-trombone-471.wav'))
-FIRE_SOUND = pygame.mixer.Sound('726ZS62-wizard-fire-spell-cast-2-[AudioTrimmer.com].mp3')
+FIRE_SOUND = pygame.mixer.Sound('726ZS62-wizard-fire-spell-cast-2-[AudioTrimmer.com].wav')
 
 FONT = pygame.font.SysFont('comicsans', 50)
 

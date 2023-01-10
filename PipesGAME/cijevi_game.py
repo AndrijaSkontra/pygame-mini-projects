@@ -11,7 +11,7 @@ CIJEV1 = pygame.transform.scale(pygame.image.load('cijev1-removebg-preview.png')
 CIJEV2 = pygame.transform.scale(pygame.image.load('cijev2-removebg-preview.png'), (150, 133))
 CIJEV3 = pygame.transform.scale(pygame.image.load('cijev3-removebg-preview.png'), (150, 150))
 WINNER_FONT = pygame.font.SysFont('comicsans', 100)
-WIN_SOUND = pygame.mixer.Sound('tadaa-47995.mp3')
+WIN_SOUND = pygame.mixer.Sound('tadaa-47995.wav')
 ROTATE_SOUND = pygame.mixer.Sound('mixkit-falling-on-metal-roof-752.wav')
 
 
