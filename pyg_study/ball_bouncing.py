@@ -10,6 +10,7 @@ pygame.init()
 screen = pygame.display.set_mode(size)
 running = True
 ball = pygame.image.load("lopta-removebg-preview.png")
+ball.convert() #cleaner ball?
 rect = ball.get_rect()
 speed = [2, 2]
 while running:
