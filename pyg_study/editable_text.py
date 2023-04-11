@@ -15,7 +15,7 @@ screen = pygame.display.set_mode(size)
 
 font1 = pygame.font.SysFont("comicsansms", 100)
 editable = "Editable text"
-font1 = pygame.font.SysFont("ebrima", 72)
+font2 = pygame.font.SysFont("ebrima", 72)
 slika_fonta_2 = font1.render("MisterCool", True, PURPLE)
 fonts = pygame.font.get_fonts()
 run = True
